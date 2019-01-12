@@ -1,3 +1,7 @@
+/**
+ * @author Ashish 
+ * Modified Date Jan 13, 2019
+*/
 package com.concerto.tcpipdoc.connection;
 
 import java.net.InetSocketAddress;
@@ -9,10 +13,16 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.concerto.tcpipdoc.fileRead.FileRead;
 
 @Service
 public class SocketServer implements Runnable {
+
+	@Autowired
+	FileRead fileRead;
 
 	public SocketServer() {
 
@@ -57,24 +67,15 @@ public class SocketServer implements Runnable {
 									.println("Connection accepted for the client : " + clientSocket.getLocalAddress());
 
 						} else if (key.isWritable()) {
-							
+
 							SocketChannel clientSocket = (SocketChannel) key.channel();
-							for (int i = 0; i < 10; i++) {
-								String name = "Ashish" + System.lineSeparator();
-								byte[] b = name.getBytes();
-								ByteBuffer buffer = ByteBuffer.wrap(b);
-								try {
-									clientSocket.write(buffer);
-								}catch(Exception e) {
-									key.cancel();
-									e.printStackTrace();
-									break;
-								}
-								
-
+							try {
+								fileRead.fileRead(clientSocket);
+							} catch (Exception e) {
+								key.cancel();
+								e.printStackTrace();
+								break;
 							}
-
-							Thread.sleep(5000);
 						}
 						keyIterator.remove();
 					} catch (Exception e) {
