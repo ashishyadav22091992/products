@@ -1,11 +1,7 @@
-/**
- * @author Ashish 
- * Modified Date Jan 13, 2019
-*/
+
 package com.concerto.tcpipdoc.connection;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -16,6 +12,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.concerto.TcpIpDocApplication;
 import com.concerto.tcpipdoc.fileRead.FileRead;
 
 @Service
@@ -41,7 +38,7 @@ public class SocketServer implements Runnable {
 			// listening socket
 			ServerSocketChannel docServer = ServerSocketChannel.open();
 			// socket address [server machine ip + doc server running port]
-			InetSocketAddress docServerAddress = new InetSocketAddress("192.168.0.107", 9292);
+			InetSocketAddress docServerAddress = new InetSocketAddress(TcpIpDocApplication.serverIP, TcpIpDocApplication.serverPort);
 			docServer.bind(docServerAddress);
 			docServer.configureBlocking(false);
 			int ops = docServer.validOps();

@@ -13,21 +13,21 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.springframework.stereotype.Service;
 
+import com.concerto.TcpIpDocApplication;
 import com.revinate.guava.util.concurrent.RateLimiter;
 
 @Service
 public class FileRead {
 
-	final static String filePath = "E:\\file_for_testing\\fileData.txt";
-
-	final RateLimiter rateLimiter = RateLimiter.create(1);
+	
 
 	public FileRead() {
 
 	}
 
 	public void fileRead(SocketChannel clientChannel) throws IOException {
-		File file = new File(filePath);
+		RateLimiter rateLimiter = RateLimiter.create(TcpIpDocApplication.dataWriteTPS);
+		File file = new File(TcpIpDocApplication.fileAddress);
 
 		LineIterator it = FileUtils.lineIterator(file, "UTF-8");
 		while (it.hasNext()) {
