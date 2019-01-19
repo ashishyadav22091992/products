@@ -1,51 +1,32 @@
+/**
+ * @author Ashish 
+ * Modified Date Jan 17, 2019
+*/
 package com.concerto;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.concerto.tcpipdoc.connection.SocketServer;
-
-import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Stage;
+import com.concerto.tcpipdoc.connection.DocClient;
+import com.concerto.tcpipdoc.connection.DocServer;
 
 @SpringBootApplication
 public class TcpIpDocApplication implements CommandLineRunner {
 
+	static Logger logger = Logger.getLogger(TcpIpDocApplication.class.getName());
+
 	@Autowired
-	private SocketServer socketServer;
+	private DocClient docClient;
 
-	public static String serverIP;
-	public static int serverPort;
-	public static String fileAddress;
-	public static int dataWriteTPS;
+	@Value("${tcpip.connection.client.connectionType}")
+	private String docType;
 
-	@Value("${tcpip.connection.server.serverip}")
-	public void setServerIP(String serverIpAddress) {
-		serverIP = serverIpAddress;
-	}
-
-	@Value("${tcpip.connection.server.listeningport}")
-	public void setServerPort(int port) {
-		serverPort = port;
-	}
-
-	@Value("${tcpip.fileread.serverclient.fileaddress}")
-	public void setFileAddress(String address) {
-		fileAddress = address;
-	}
-
-	@Value("${tcpip.fileread.serverclient.datawritespeed}")
-	public void setTPS(int tps) {
-		dataWriteTPS = tps;
-	}
+	@Autowired
+	private DocServer docServer;
 
 	public static void main(String[] args) {
 		SpringApplication.run(TcpIpDocApplication.class, args);
@@ -54,7 +35,19 @@ public class TcpIpDocApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		socketServer.stablisHostConnection();
+		Thread thread = null;
+		if (docType.equalsIgnoreCase("server")) {
+			thread = new Thread(docServer);
+		} else if (docType.equalsIgnoreCase("client")) {
+			thread = new Thread(docClient);
+		}
+		try {
+			thread.start();
+//            logger.info("Application started successfully!");
+		} catch (Exception e) {
+//            logger.error("Application failed to start!");
+		}
 
 	}
+
 }
