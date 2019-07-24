@@ -1,6 +1,7 @@
 
 package com.concerto.tcpipdoc.connection;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -49,7 +50,8 @@ public class DocServer implements Runnable {
 		try {
 			Selector selector = Selector.open();
 			ServerSocketChannel serverSocket = ServerSocketChannel.open();
-			InetSocketAddress serverAddress = new InetSocketAddress(serverListenIp, serverListenPort);
+			InetAddress inetAddress = InetAddress.getLocalHost();
+			InetSocketAddress serverAddress = new InetSocketAddress(inetAddress, serverListenPort);
 			serverSocket.bind(serverAddress);
 			serverSocket.configureBlocking(false);
 			int ops = serverSocket.validOps();
